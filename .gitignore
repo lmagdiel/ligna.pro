@@ -1,8 +1,8 @@
+.dev.vars
+.env
+.hugo_build.lock
+.wrangler/
+/_fonte/
 /public/
 /resources/_gen/
-.hugo_build.lock
-.env
-.dev.vars
-.wrangler/
 node_modules/
-/_fonte/

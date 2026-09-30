@@ -1,0 +1,8 @@
+# Copie para .dev.vars (ignorado pelo git) para testar as Functions com `npx wrangler pages dev public`.
+SMTP_HOST=mail.ligna.pro
+SMTP_PORT=465
+SMTP_USER=contato@ligna.pro
+SMTP_PASS=
+CONTATO_DESTINO=contato@ligna.pro
+TURNSTILE_SECRET=
+PREVIEW_AUTH=

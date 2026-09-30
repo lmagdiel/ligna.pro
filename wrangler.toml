@@ -2,3 +2,4 @@
 name = "ligna-pro"
 pages_build_output_dir = "public"
 compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]   # exigido pelo worker-mailer (SMTP via TCP sockets)

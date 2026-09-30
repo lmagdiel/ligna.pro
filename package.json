@@ -1,0 +1,8 @@
+{
+  "name": "ligna-pro",
+  "private": true,
+  "description": "Site ligna.pro (Hugo + Cloudflare Pages). As dependências são só das Pages Functions.",
+  "dependencies": {
+    "worker-mailer": "^1.2.1"
+  }
+}

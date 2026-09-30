@@ -17,7 +17,7 @@ Migrado do WordPress (tema Zakra + SiteOrigin + Polylang + Contact Form 7 + dFli
 | `static/fonts/` | Montserrat (variável, woff2) auto-hospedada. |
 | `i18n/` | Textos da interface (menu, formulário, rodapé) em PT/EN/ES. |
 | `themes/ligna/` | Tema: layouts, parciais (`_partials/`), shortcodes (`faixa`, `intro`, `equipe`, `membro`, `prosa`, `lista`) e CSS (`assets/css/main.css`). |
-| `functions/` | Cloudflare Pages Functions: `_middleware.js` (senha do preview e `noindex`) e `api/contato.js` (formulário, entrega via JMAP no Fastmail, anexo opcional). |
+| `functions/` | Cloudflare Pages Functions: `_middleware.js` (senha do preview e `noindex`) e `api/contato.js` (formulário: envia por SMTP pela conta `contato@ligna.pro` do cPanel, com anexo opcional). Dependência: `worker-mailer` (`package.json`). |
 | `_fonte/` | Exportação do site antigo (HTML, JSON da API REST, uploads originais, PDFs). Ignorada pelo git; só referência. |
 
 ## Uso local (PowerShell)
@@ -28,7 +28,7 @@ hugo server                            # http://localhost:1313
 hugo --gc --minify                     # build em public/
 ```
 
-Para testar as Functions localmente: `npx wrangler pages dev public` (lê segredos de `.dev.vars`).
+Para testar as Functions localmente: `npm install` uma vez e `npx wrangler pages dev public` (lê segredos de `.dev.vars`; modelo em `.dev.vars.example`).
 
 ## Publicação
 
@@ -38,8 +38,9 @@ Para testar as Functions localmente: `npx wrangler pages dev public` (lê segred
 - Variáveis/segredos do projeto no Pages:
   - `PREVIEW_AUTH` = `usuario:senha` → enquanto existir, o site inteiro pede senha e sai com `noindex`. **Remover no lançamento.**
   - `TURNSTILE_SECRET` (+ `turnstileSiteKey` em `hugo.toml`) → proteção do formulário.
-  - `FASTMAIL_API_TOKEN` → entrega das mensagens do formulário na caixa de entrada (JMAP). Anexos sobem como blob e vão junto.
-  - `CONTATO_DESTINO`, `CONTATO_REMETENTE` → opcionais (endereços ficam só nas variáveis do Cloudflare, nunca no código).
+  - `SMTP_HOST` (`mail.ligna.pro`), `SMTP_PORT` (`465`), `SMTP_USER` (`contato@ligna.pro`), `SMTP_PASS` (senha da caixa, segredo) → envio do formulário pelo servidor de e-mail do cPanel. O e-mail continua hospedado lá; só o site muda de lugar. **Manter os registros DNS `mail.ligna.pro`, `webmail`, `cpanel` apontando para o cPanel.**
+  - `CONTATO_DESTINO` → quem recebe (padrão: `SMTP_USER`).
+  - Para definir um segredo: `npx wrangler@4 pages secret put SMTP_PASS --project-name ligna-pro` (produção) — o preview usa os mesmos valores se definidos no painel do Pages em *Settings › Variables and secrets*.
 
 Publicação manual (com `.env` contendo `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`), no PowerShell:
 
@@ -55,7 +56,7 @@ Campos: nome, e-mail, anexo (opcional, até 25 MB; PDF, Office, texto, imagem, �
 ## Plano de virada
 
 1. Preview com senha (`PREVIEW_AUTH`) para a Ligna aprovar.
-2. Turnstile e token do Fastmail configurados; testar o formulário nos 3 idiomas, com e sem anexo.
+2. Turnstile e `SMTP_PASS` configurados; testar o formulário nos 3 idiomas, com e sem anexo.
 3. Domínio `ligna.pro` no projeto do Pages (DNS já está na Cloudflare); remover `PREVIEW_AUTH`.
 4. Conferir os endereços antigos (`_redirects`), em especial os PDFs dos cartões (QR codes) e `/catalogo/`.
 5. E-mail continua no cPanel por enquanto (MX/SPF não mudam nesta etapa). Só cancelar a hospedagem depois de migrar o e-mail.

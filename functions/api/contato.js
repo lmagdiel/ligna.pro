@@ -1,15 +1,17 @@
 // Formulário de contato: POST /api/contato
 // Sem banco de dados: a mensagem é validada, passa pelo Turnstile (se configurado)
-// e é entregue diretamente na caixa de entrada do Fastmail via JMAP (Email/set),
-// com Reply-To apontando para quem escreveu. Anexo opcional (subido como blob JMAP).
+// e é enviada por SMTP pela própria conta contato@ligna.pro (servidor de e-mail do cPanel),
+// com Reply-To apontando para quem escreveu. Anexo opcional vai junto.
 //
 // Variáveis/segredos do projeto no Cloudflare Pages:
-//   TURNSTILE_SECRET     segredo do widget Turnstile (opcional, recomendado)
-//   FASTMAIL_API_TOKEN   token de API do Fastmail com permissão de e-mail (JMAP Mail)
-//   CONTATO_DESTINO      endereço exibido como destinatário (opcional)
-//   CONTATO_REMETENTE    endereço exibido como remetente (opcional; sem ele, aparece o de quem escreveu)
+//   SMTP_HOST, SMTP_PORT   servidor de saída (mail.ligna.pro, 465 = TLS direto; 587 = STARTTLS)
+//   SMTP_USER, SMTP_PASS   conta que envia (contato@ligna.pro e a senha da caixa)
+//   CONTATO_DESTINO        quem recebe (opcional; padrão = SMTP_USER)
+//   TURNSTILE_SECRET       segredo do widget Turnstile (opcional, recomendado)
 //
-// Nenhum endereço fica no código: o repositório pode ser público e e-mail exposto atrai spam.
+// Nenhum endereço ou senha fica no código: o repositório pode ser público.
+
+import { WorkerMailer } from 'worker-mailer';
 
 const LIMITES = { nome: 120, email: 200, mensagem: 5000, anexoBytes: 25 * 1024 * 1024 };
 const ANEXO_TIPOS = /^(application\/(pdf|msword|vnd\.openxmlformats-officedocument\.[a-z.]+|vnd\.oasis\.opendocument\.[a-z]+|rtf|zip|x-zip-compressed|x-subrip)|text\/(plain|rtf|x-subrip|vtt)|image\/|audio\/|video\/)/;
@@ -39,34 +41,15 @@ async function verificarTurnstile(env, token, ip) {
   return Boolean(dados.success);
 }
 
-async function jmap(env) {
-  const auth = { Authorization: `Bearer ${env.FASTMAIL_API_TOKEN}` };
-  const sessao = await (await fetch('https://api.fastmail.com/jmap/session', { headers: auth })).json();
-  const accountId = sessao.primaryAccounts['urn:ietf:params:jmap:mail'];
-  const chamar = async (methodCalls) => {
-    const r = await fetch(sessao.apiUrl, {
-      method: 'POST',
-      headers: { ...auth, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ using: ['urn:ietf:params:jmap:core', 'urn:ietf:params:jmap:mail'], methodCalls }),
-    });
-    if (!r.ok) throw new Error(`JMAP HTTP ${r.status}`);
-    return (await r.json()).methodResponses;
-  };
-  const subir = async (arquivo) => {
-    const url = sessao.uploadUrl.replace('{accountId}', accountId);
-    const r = await fetch(url, { method: 'POST', headers: { ...auth, 'Content-Type': arquivo.type || 'application/octet-stream' }, body: arquivo.stream() });
-    if (!r.ok) throw new Error(`JMAP upload HTTP ${r.status}`);
-    return r.json(); // { blobId, type, size }
-  };
-  return { accountId, chamar, subir };
+function base64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
 }
 
-async function entregarFastmail(env, msg) {
-  const { accountId, chamar, subir } = await jmap(env);
-  const [[, caixas]] = await chamar([['Mailbox/query', { accountId, filter: { role: 'inbox' } }, 'a']]);
-  const inboxId = caixas.ids && caixas.ids[0];
-  if (!inboxId) throw new Error('Caixa de entrada não encontrada');
-
+async function enviarSmtp(env, msg) {
+  const porta = Number(env.SMTP_PORT || 465);
   const texto = [
     `Nome: ${msg.nome}`,
     `E-mail: ${msg.email}`,
@@ -79,34 +62,33 @@ async function entregarFastmail(env, msg) {
 
   const attachments = [];
   if (msg.anexo) {
-    const blob = await subir(msg.anexo);
-    attachments.push({ blobId: blob.blobId, type: blob.type, name: msg.anexo.name, disposition: 'attachment' });
+    attachments.push({
+      filename: msg.anexo.name.replace(/[\r\n"]/g, '_').slice(0, 150),
+      content: base64(await msg.anexo.arrayBuffer()),
+      mimeType: msg.anexo.type || 'application/octet-stream',
+    });
   }
 
-  const [[metodo, resultado]] = await chamar([[
-    'Email/set',
+  await WorkerMailer.send(
     {
-      accountId,
-      create: {
-        m: {
-          mailboxIds: { [inboxId]: true },
-          keywords: {},
-          from: [{ name: `${msg.nome} (via site)`, email: env.CONTATO_REMETENTE || msg.email }],
-          replyTo: [{ name: msg.nome, email: msg.email }],
-          ...(env.CONTATO_DESTINO ? { to: [{ email: env.CONTATO_DESTINO }] } : {}),
-          subject: `[ligna.pro · ${ASSUNTO_IDIOMA[msg.idioma] || ASSUNTO_IDIOMA.pt}] ${msg.nome}`,
-          receivedAt: new Date().toISOString(),
-          bodyValues: { t: { value: texto, charset: 'utf-8' } },
-          textBody: [{ partId: 't', type: 'text/plain' }],
-          ...(attachments.length ? { attachments } : {}),
-        },
-      },
+      host: env.SMTP_HOST,
+      port: porta,
+      secure: porta === 465,
+      startTls: porta !== 465,
+      credentials: { username: env.SMTP_USER, password: env.SMTP_PASS },
+      authType: ['plain', 'login'],
+      socketTimeoutMs: 30000,
+      responseTimeoutMs: 30000,
     },
-    'b',
-  ]]);
-  if (metodo !== 'Email/set' || !resultado.created || !resultado.created.m) {
-    throw new Error('Falha ao criar a mensagem: ' + JSON.stringify(resultado.notCreated || resultado));
-  }
+    {
+      from: { name: `${msg.nome} (via site)`, email: env.SMTP_USER },
+      to: env.CONTATO_DESTINO || env.SMTP_USER,
+      reply: { name: msg.nome, email: msg.email },
+      subject: `[ligna.pro · ${ASSUNTO_IDIOMA[msg.idioma] || ASSUNTO_IDIOMA.pt}] ${msg.nome}`,
+      text: texto,
+      ...(attachments.length ? { attachments } : {}),
+    },
+  );
 }
 
 export async function onRequestPost({ request, env }) {
@@ -143,13 +125,13 @@ export async function onRequestPost({ request, env }) {
     return redirecionar(request, erro);
   }
 
-  if (!env.FASTMAIL_API_TOKEN) {
-    console.warn('contato: FASTMAIL_API_TOKEN não configurado');
+  if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) {
+    console.warn('contato: SMTP_HOST/SMTP_USER/SMTP_PASS não configurados');
     return redirecionar(request, erro);
   }
 
   try {
-    await entregarFastmail(env, msg);
+    await enviarSmtp(env, msg);
   } catch (e) {
     console.error('contato:', e.message);
     return redirecionar(request, erro);
