@@ -2,6 +2,7 @@
 // - Preview de acesso restrito: se a variável PREVIEW_AUTH ("usuario:senha") existir,
 //   exige autenticação HTTP Basic. No lançamento, basta remover a variável.
 // - Previews e o domínio *.pages.dev nunca são indexados (X-Robots-Tag).
+// - www.ligna.pro redireciona para ligna.pro.
 
 const REALM = 'Preview ligna.pro';
 
@@ -24,6 +25,12 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
   const restrito = Boolean(env.PREVIEW_AUTH);
+
+  // www → apex (o canonical é ligna.pro; o _redirects não aceita origem com host).
+  if (url.hostname === 'www.ligna.pro') {
+    url.hostname = 'ligna.pro';
+    return Response.redirect(url.toString(), 301);
+  }
 
   if (restrito) {
     const esperado = 'Basic ' + codificar(env.PREVIEW_AUTH);
