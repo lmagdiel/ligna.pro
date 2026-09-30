@@ -116,10 +116,10 @@ p { margin: 0 0 1em; }
 .lista ul { list-style: none; padding: 0; margin: 0; }
 .lista li { line-height: 1.5; }
 .centrado { text-align: center; }
-.intro { display: grid; grid-template-columns: 2fr 3fr; gap: 3rem; align-items: center; padding-top: 3rem; padding-bottom: 3rem; }
-.intro-logo img { max-width: 420px; margin: 0 auto; }
+.intro { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 3rem; align-items: center; padding-top: 3rem; padding-bottom: 3rem; }
+.intro-logo img { width: 100%; max-width: 420px; margin: 0 auto; }
 .equipe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; padding-top: 3rem; padding-bottom: 2rem; }
-.membro-foto img { width: 250px; height: 250px; border-radius: 50%; object-fit: cover; margin: 0 auto 1.2rem; }
+.membro-foto img { width: min(250px, 80vw); aspect-ratio: 1; height: auto; border-radius: 50%; object-fit: cover; margin: 0 auto 1.2rem; }
 .membro h3 { color: var(--verde); text-align: center; font-size: 22px; font-weight: 500; }
 .membro .prosa { text-align: justify; font-size: 14px; }
 .prosa.cont { padding-top: 3rem; padding-bottom: 2.5rem; max-width: 1100px; }
