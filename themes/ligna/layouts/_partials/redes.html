@@ -1,0 +1,18 @@
+{{- /* Ícones das redes. Parâmetros: ctx (página), tam (px), rotulos (bool: mostra o texto ao lado) */ -}}
+{{- $tam := .tam | default 35 }}
+{{- $r := site.Params.redes }}
+{{- $itens := slice
+  (dict "id" "mail" "url" (printf "mailto:%s" site.Params.email) "rotulo" site.Params.email "nome" "E-mail")
+  (dict "id" "proz" "url" site.Params.proz "rotulo" "lignalink" "nome" "ProZ")
+  (dict "id" "linkedin" "url" $r.linkedin "rotulo" (path.Base $r.linkedin) "nome" "LinkedIn")
+  (dict "id" "instagram" "url" $r.instagram "rotulo" (printf "@%s" (path.Base $r.instagram)) "nome" "Instagram")
+  (dict "id" "twitter" "url" $r.twitter "rotulo" (printf "@%s" (path.Base $r.twitter)) "nome" "Twitter")
+  (dict "id" "facebook" "url" $r.facebook "rotulo" (printf "/%s" (path.Base $r.facebook)) "nome" "Facebook") }}
+{{- $so := .so }}
+{{- $rotulos := .rotulos }}
+{{- range $itens }}
+{{- $it := . }}
+{{- if or (not $so) (in $so $it.id) }}
+{{- with resources.Get (printf "img/icones/%s.png" $it.id) }}
+<a class="rede rede-{{ $it.id }}" href="{{ $it.url }}"{{ if ne $it.id "mail" }} rel="noopener" target="_blank"{{ end }} title="{{ $it.nome }}"><img src="{{ .RelPermalink }}" width="{{ $tam }}" height="{{ $tam }}" alt="{{ $it.nome }}">{{ if $rotulos }}<span>{{ $it.rotulo }}</span>{{ end }}</a>
+{{- end }}{{ end }}{{ end }}

@@ -1,0 +1,19 @@
+{{ define "main" }}
+<article class="pagina pdf-pagina cont">
+  <h1>{{ .Title }}</h1>
+  <div class="prosa centrado">{{ .Content }}</div>
+  {{- with .Params.pdf }}
+  <div class="pdf-visor">
+    <iframe src="{{ . | relURL }}#view=FitH" title="{{ $.Title }}" loading="lazy"></iframe>
+    <p class="pdf-fallback">{{ i18n "pdf_fallback" }} <a href="{{ . | relURL }}">{{ i18n "pdf_baixar" }}</a></p>
+  </div>
+  <p class="pdf-baixar">
+    <span>{{ $.Params.baixar }}</span>
+    <a class="pdf-icone" href="{{ . | relURL }}" download title="{{ i18n "pdf_baixar" }}">
+      <svg viewBox="0 0 48 60" width="48" height="60" aria-hidden="true"><path d="M6 2h24l14 14v40a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M30 2v14h14" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><text x="24" y="50" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="700" font-size="14" fill="currentColor">PDF</text></svg>
+      <span class="vh">{{ i18n "pdf_baixar" }}</span>
+    </a>
+  </p>
+  {{- end }}
+</article>
+{{ end }}

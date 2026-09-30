@@ -1,0 +1,83 @@
+baseURL = "https://ligna.pro/"
+title = "Ligna"
+theme = "ligna"
+enableRobotsTXT = true
+disableKinds = ["taxonomy", "term", "RSS"]
+timeZone = "America/Sao_Paulo"
+
+defaultContentLanguage = "pt"
+defaultContentLanguageInSubdir = false
+
+[languages]
+  [languages.pt]
+    locale = "pt-BR"
+    label = "português"
+    weight = 1
+    title = "Ligna"
+    [languages.pt.params]
+      description = "Ligna — traduções e serviços linguísticos para conectar o Brasil e o mundo. Tradução, interpretação, legendagem e revisão de texto em inglês, português, espanhol e italiano."
+      logo = "img/logo/ligna-pt.png"
+      [languages.pt.params.redes]
+        linkedin = "https://www.linkedin.com/company/lignalink/"
+        instagram = "https://instagram.com/lignalink/"
+        twitter = "https://twitter.com/lignalink"
+        facebook = "https://www.facebook.com/lignalink"
+  [languages.en]
+    locale = "en"
+    label = "english"
+    weight = 2
+    title = "Ligna"
+    [languages.en.params]
+      description = "Ligna — translations and language services to connect Brazil and the world. Translation, interpreting, subtitling and proofreading in English, Portuguese, Spanish and Italian."
+      logo = "img/logo/ligna-en.png"
+      [languages.en.params.redes]
+        linkedin = "https://www.linkedin.com/company/lignaenglish/"
+        instagram = "https://instagram.com/lignaenglish/"
+        twitter = "https://twitter.com/lignaenglish"
+        facebook = "https://www.facebook.com/lignaenglish"
+  [languages.es]
+    locale = "es"
+    label = "español"
+    weight = 3
+    title = "Ligna"
+    [languages.es.params]
+      description = "Ligna — traducciones y servicios lingüísticos para conectar Brasil y el mundo. Traducción, interpretación, subtitulado y corrección de textos en inglés, portugués, español e italiano."
+      logo = "img/logo/ligna-es.png"
+      [languages.es.params.redes]
+        linkedin = "https://www.linkedin.com/company/lignalink/"
+        instagram = "https://instagram.com/lignalink/"
+        twitter = "https://twitter.com/lignalink"
+        facebook = "https://www.facebook.com/lignalink"
+
+[params]
+  email = "contato@ligna.pro"
+  proz = "https://www.proz.com/business/138658-ligna-lignalink"
+  cnpj = "30.734.946/0001-42"
+  cidade = "Brasília (DF)"
+  designer = { nome = "Polvo", url = "https://polvo.design/" }
+  # Formulário de contato (Cloudflare Pages Function em /api/contato).
+  contactEndpoint = "/api/contato"
+  turnstileSiteKey = ""   # site key do Turnstile (pública); o segredo fica no Cloudflare
+  anexo = true            # campo de anexo no formulário (tamanho máx. em functions/api/contato.js)
+
+[markup.goldmark.renderer]
+  unsafe = true  # conteúdo é nosso; permite HTML dos shortcodes aninhados
+
+[imaging]
+  resampleFilter = "Lanczos"
+  anchor = "Smart"
+  [imaging.webp]
+    quality = 80
+  [imaging.jpeg]
+    quality = 82
+
+[outputs]
+  home = ["HTML"]
+  section = ["HTML"]
+  page = ["HTML"]
+
+[sitemap]
+  changeFreq = "monthly"
+
+[build]
+  writeStats = false

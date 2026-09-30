@@ -1,0 +1,35 @@
+{{- $atual := . }}
+<div class="barra">
+  <div class="cont">
+    <nav class="idiomas" aria-label="{{ i18n "idiomas" }}">
+      {{- range hugo.Sites }}
+      {{- $s := . }}
+      {{- $dest := $s.Home.RelPermalink }}
+      {{- range $atual.AllTranslations }}{{ if eq .Language.Lang $s.Language.Lang }}{{ $dest = .RelPermalink }}{{ end }}{{ end }}
+      <a href="{{ $dest }}" hreflang="{{ $s.Language.Locale }}"{{ if eq $s.Language.Lang site.Language.Lang }} aria-current="true"{{ end }}>{{ $s.Language.Label }}</a>
+      {{- end }}
+    </nav>
+    <div class="redes-topo">{{ partial "redes.html" (dict "ctx" . "tam" 35) }}</div>
+  </div>
+</div>
+<header class="topo">
+  <div class="cont">
+    <a class="marca" href="{{ site.Home.RelPermalink }}">
+      {{- with resources.Get site.Params.logo }}<img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="Ligna">{{ end -}}
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="{{ i18n "abrir_menu" }}"><span></span><span></span><span></span></button>
+    <nav id="menu" class="menu" aria-label="{{ i18n "menu_principal" }}">
+      <ul>
+        <li><a href="{{ site.Home.RelPermalink }}"{{ if .IsHome }} aria-current="page"{{ end }}>{{ i18n "inicio" }}</a></li>
+        {{- range site.Menus.main }}
+        {{- $ativo := or ($atual.IsMenuCurrent "main" .) ($atual.HasMenuCurrent "main" .) }}
+        <li><a href="{{ .URL }}"{{ if $ativo }} aria-current="page"{{ end }}>{{ .Name | lower }}</a></li>
+        {{- end }}
+      </ul>
+    </nav>
+  </div>
+</header>
+<script>
+(function(){var b=document.querySelector('.menu-btn'),m=document.getElementById('menu');if(!b)return;
+b.addEventListener('click',function(){var o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!o));document.body.classList.toggle('menu-aberto',!o);});})();
+</script>

@@ -1,0 +1,23 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{- $titulo := cond .IsHome site.Title (printf "%s – %s" .Title site.Title) }}
+<title>{{ $titulo }}</title>
+{{- $desc := or .Description site.Params.description | plainify | truncate 200 }}
+<meta name="description" content="{{ $desc }}">
+<link rel="canonical" href="{{ .Permalink }}">
+{{- range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
+{{- end }}
+<meta property="og:title" content="{{ $titulo }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="Ligna">
+{{- with resources.Get "img/logo/ligna-grande.png" }}<meta property="og:image" content="{{ .Permalink }}">{{ end }}
+<meta name="theme-color" content="#5b567e">
+<link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="any">
+<link rel="icon" type="image/png" href="{{ "favicon-32x32.png" | relURL }}">
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
+{{- $css := slice (resources.Get "css/fonts.css") (resources.Get "css/main.css") | resources.Concat "css/site.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+{{- if .Params.noindex }}<meta name="robots" content="noindex">{{ end }}

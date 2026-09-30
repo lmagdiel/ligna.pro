@@ -1,0 +1,30 @@
+<footer class="rodape">
+  <div class="cont rodape-colunas">
+    <div class="rodape-col">
+      <h2>{{ i18n "rodape_mapa" }}</h2>
+      <ul class="mapa">
+        <li><a href="{{ site.Home.RelPermalink }}">{{ i18n "inicio" }}</a></li>
+        {{- range site.Menus.main }}<li><a href="{{ .URL }}">{{ .Name | lower }}</a></li>{{ end }}
+      </ul>
+    </div>
+    <div class="rodape-col">
+      <h2>{{ i18n "rodape_servicos" }}</h2>
+      <ul class="servicos-lista">
+        {{- range split (i18n "rodape_servicos_lista") "|" }}<li>{{ . }}</li>{{ end }}
+      </ul>
+      {{- with site.GetPage "servicos" }}<a class="botao" href="{{ .RelPermalink }}">{{ i18n "rodape_saiba_mais" }}</a>{{ end }}
+    </div>
+    <div class="rodape-col">
+      <h2>{{ i18n "rodape_contato" }}</h2>
+      <div class="redes-lista">{{ partial "redes.html" (dict "ctx" . "tam" 30 "rotulos" true "so" (slice "mail" "proz" "linkedin")) }}</div>
+    </div>
+    <div class="rodape-col">
+      <h2>{{ i18n "rodape_redes" }}</h2>
+      <div class="redes-lista">{{ partial "redes.html" (dict "ctx" . "tam" 30 "rotulos" true "so" (slice "instagram" "twitter" "facebook")) }}</div>
+    </div>
+  </div>
+  <div class="cont rodape-base">
+    <p>{{ i18n "copyright" }} {{ now.Year }} <a href="{{ site.Home.RelPermalink }}">Ligna</a> | CNPJ: {{ site.Params.cnpj }} | {{ site.Params.cidade }}</p>
+    <p>{{ i18n "designer" }} <a href="{{ site.Params.designer.url }}" rel="noopener">{{ site.Params.designer.nome }}</a></p>
+  </div>
+</footer>

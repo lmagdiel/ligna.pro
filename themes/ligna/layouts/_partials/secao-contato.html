@@ -1,0 +1,9 @@
+{{- /* Seção do formulário sobre a foto duotone (desktop) / foto acima do formulário (mobile). */ -}}
+<section class="contato-secao">
+  {{ partial "img.html" (dict "src" "faixas/contato.png" "alt" "" "class" "contato-fundo faixa-desktop" "sizes" "100vw") }}
+  {{ partial "img.html" (dict "src" "faixas/contato-mobile.png" "alt" "" "class" "contato-fundo faixa-mobile" "larguras" (slice 640 1080) "sizes" "100vw") }}
+  <div class="cont contato-grade">
+    <div></div>
+    {{ partial "formulario.html" . }}
+  </div>
+</section>

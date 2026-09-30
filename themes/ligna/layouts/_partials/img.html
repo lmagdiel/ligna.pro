@@ -1,0 +1,16 @@
+{{- /* Imagem processada a partir de assets/img/<src>: gera WebP em várias larguras.
+       Parâmetros: src, alt, larguras (slice), sizes, class, loading, fetchpriority */ -}}
+{{- $src := .src }}
+{{- with resources.Get (printf "img/%s" $src) }}
+  {{- $larguras := $.larguras | default (slice 640 1024 1600 2058) }}
+  {{- $srcset := slice }}
+  {{- $ultima := . }}
+  {{- range $larguras }}
+    {{- if le . $ultima.Width }}
+      {{- $r := $ultima.Resize (printf "%dx webp" .) }}
+      {{- $srcset = $srcset | append (printf "%s %dw" $r.RelPermalink $r.Width) }}
+    {{- end }}
+  {{- end }}
+  {{- $padrao := .Resize (printf "%dx webp" (cond (gt .Width 1600) 1600 .Width)) }}
+  <img src="{{ $padrao.RelPermalink }}"{{ with $srcset }} srcset="{{ delimit . ", " }}"{{ end }} sizes="{{ $.sizes | default "100vw" }}" width="{{ $padrao.Width }}" height="{{ $padrao.Height }}" alt="{{ $.alt }}" loading="{{ $.loading | default "lazy" }}" decoding="async"{{ with $.class }} class="{{ . }}"{{ end }}{{ with $.fetchpriority }} fetchpriority="{{ . }}"{{ end }}>
+{{- else }}{{ warnf "Imagem não encontrada: img/%s" $src }}{{ end }}

@@ -1,0 +1,2 @@
+{{- /* {{< faixa img="sobre1" >}}Título{{< /faixa >}} — faixa duotone com título opcional */ -}}
+{{ partial "faixa.html" (dict "img" (.Get "img") "titulo" (trim .Inner " \n") "loading" (cond (eq .Ordinal 0) "eager" "lazy")) }}

@@ -1,0 +1,5 @@
+<div class="membro">
+  <div class="membro-foto">{{ partial "img.html" (dict "src" (printf "equipe/%s" (.Get "foto")) "alt" (.Get "nome") "larguras" (slice 300 600) "sizes" "250px") }}</div>
+  <h3>{{ .Get "nome" }}</h3>
+  <div class="prosa">{{ .Inner | markdownify }}</div>
+</div>

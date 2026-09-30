@@ -1,0 +1,31 @@
+{{ define "main" }}
+{{- $hero := resources.Get "img/faixas/hero.jpg" }}
+{{- $h1 := $hero.Resize "1600x jpg q80" }}{{ $h2 := $hero.Resize "2048x jpg q80" }}{{ $h0 := $hero.Resize "900x jpg q78" }}
+<section class="hero">
+  <img class="hero-img" src="{{ $h1.RelPermalink }}" srcset="{{ $h0.RelPermalink }} 900w, {{ $h1.RelPermalink }} 1600w, {{ $h2.RelPermalink }} 2048w" sizes="100vw" width="{{ $h1.Width }}" height="{{ $h1.Height }}" alt="" fetchpriority="high" decoding="async">
+  <div class="cont hero-texto">
+    <h1>{{ .Params.hero }}</h1>
+  </div>
+</section>
+
+{{ partial "faixa.html" (dict "img" "serios" "titulo" .Params.faixa.titulo "texto" .Params.faixa.texto "class" "faixa-serios" "loading" "eager") }}
+
+<section class="pilares cont">
+  {{- range .Params.pilares }}
+  <div class="pilar">
+    {{ partial "img.html" (dict "src" (printf "icones/%s.png" .icone) "alt" "" "larguras" (slice 200) "sizes" "100px") }}
+    <h3>{{ .titulo }}</h3>
+    <p>{{ .texto }}</p>
+  </div>
+  {{- end }}
+</section>
+
+{{ partial "faixa.html" (dict "img" "aneis") }}
+
+<section class="logo-cidade">
+  {{ partial "img.html" (dict "src" "faixas/logo-cidade.png" "alt" "Ligna" "class" "faixa-desktop" "sizes" "(min-width: 1100px) 1000px, 100vw") }}
+  {{ partial "img.html" (dict "src" "faixas/logo-cidade-mobile.png" "alt" "Ligna" "class" "faixa-mobile" "larguras" (slice 640 1266) "sizes" "100vw") }}
+</section>
+
+{{ partial "secao-contato.html" . }}
+{{ end }}

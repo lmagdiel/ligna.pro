@@ -1,0 +1,23 @@
+# Endereços do site antigo (WordPress/Polylang) → site novo. 301 = permanente.
+/inicio/                 /        301
+/inicio                  /        301
+/en/home/                /en/     301
+/en/home                 /en/     301
+/es/inicio-es/           /es/     301
+/es/inicio-es            /es/     301
+/em-construcao/          /        301
+/en/under-construction/  /en/     301
+/es/en-construccion/     /es/     301
+/index.php               /        301
+/feed/                   /        301
+# PDFs que estavam em wp-content/uploads (links espalhados em e-mails, cartões e QR codes)
+/wp-content/uploads/2022/08/Ligna-Catalogo-Digital.pdf              /arquivos/Ligna-Catalogo-Digital.pdf               301
+/wp-content/uploads/2024/10/Ligna-Company-Brochure.pdf              /arquivos/Ligna-Company-Brochure.pdf               301
+/wp-content/uploads/2022/03/Ligna-cartao-digital-Mayra-PT-2022.pdf  /arquivos/Ligna-cartao-digital-Mayra-PT-2022.pdf   301
+/wp-content/uploads/2022/04/Ligna-cartao-digital-Mayra-EN-2022-2.pdf /arquivos/Ligna-cartao-digital-Mayra-EN-2022-2.pdf 301
+/wp-content/uploads/2022/03/Ligna-cartao-digital-Mayra-EN-2022.pdf  /arquivos/Ligna-cartao-digital-Mayra-EN-2022-2.pdf 301
+/wp-content/uploads/2022/01/Ligna-cartao-digital-Mayra-PT.pdf       /arquivos/Ligna-cartao-digital-Mayra-PT-2022.pdf   301
+# Restos do WordPress
+/wp-admin/*  /  302
+/wp-login.php /  302
+/xmlrpc.php  /  404

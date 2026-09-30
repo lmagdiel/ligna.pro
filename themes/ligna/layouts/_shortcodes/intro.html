@@ -1,0 +1,5 @@
+{{- /* Bloco de apresentação: logo grande à esquerda, texto à direita */ -}}
+<section class="intro cont">
+  <div class="intro-logo">{{ partial "img.html" (dict "src" "logo/ligna-grande.png" "alt" "Ligna" "larguras" (slice 600) "sizes" "(min-width: 900px) 420px, 70vw") }}</div>
+  <div class="prosa">{{ .Inner | markdownify }}</div>
+</section>

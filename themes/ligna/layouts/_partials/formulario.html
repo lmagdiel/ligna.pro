@@ -1,0 +1,39 @@
+{{- /* Formulário de contato. Envia para a Pages Function; os destinos de sucesso/erro são as páginas do idioma atual. */ -}}
+{{- $ok := "" }}{{ $erro := "" }}
+{{- with site.GetPage "contato/enviado" }}{{ $ok = .RelPermalink }}{{ end }}
+{{- with site.GetPage "contato/erro" }}{{ $erro = .RelPermalink }}{{ end }}
+<div class="form-caixa">
+  <h2>{{ i18n "form_titulo" }}</h2>
+  <p class="form-nota">{{ i18n "form_obrigatorios" }}</p>
+  <form class="form" method="post" action="{{ site.Params.contactEndpoint }}"{{ if site.Params.anexo }} enctype="multipart/form-data"{{ end }}>
+    <input type="hidden" name="ok" value="{{ $ok }}">
+    <input type="hidden" name="erro" value="{{ $erro }}">
+    <input type="hidden" name="idioma" value="{{ site.Language.Lang }}">
+    <p class="campo">
+      <label for="f-nome">{{ i18n "form_nome" }} <abbr title="obrigatório">*</abbr></label>
+      <input id="f-nome" name="nome" type="text" autocomplete="name" required maxlength="120">
+    </p>
+    <p class="campo">
+      <label for="f-email">{{ i18n "form_email" }} <abbr title="obrigatório">*</abbr></label>
+      <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="{{ i18n "form_email_ph" }}">
+    </p>
+    {{- if site.Params.anexo }}
+    <p class="campo">
+      <label for="f-anexo">{{ i18n "form_anexo" }} <small>{{ i18n "form_opcional" }}</small></label>
+      <span class="campo-nota">{{ i18n "form_anexo_nota" }}</span>
+      <input id="f-anexo" name="anexo" type="file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.xls,.xlsx,.ppt,.pptx,.srt,.zip,image/*,audio/*,video/*">
+    </p>
+    {{- end }}
+    <p class="campo">
+      <label for="f-msg">{{ i18n "form_mensagem" }} <abbr title="obrigatório">*</abbr></label>
+      <textarea id="f-msg" name="mensagem" rows="8" required maxlength="5000" placeholder="{{ i18n "form_mensagem_ph" }}"></textarea>
+    </p>
+    {{- /* armadilha para robôs: campo invisível que pessoas não preenchem */}}
+    <p class="armadilha" aria-hidden="true"><label>Site <input name="website" tabindex="-1" autocomplete="off"></label></p>
+    {{- with site.Params.turnstileSiteKey }}
+    <div class="cf-turnstile" data-sitekey="{{ . }}" data-language="{{ site.Language.Locale }}"></div>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {{- end }}
+    <p><button class="botao" type="submit">{{ i18n "form_enviar" }}</button></p>
+  </form>
+</div>

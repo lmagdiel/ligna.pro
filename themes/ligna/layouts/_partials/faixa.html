@@ -1,0 +1,16 @@
+{{- /* Faixa de largura total com imagem duotone e, opcionalmente, título/texto sobrepostos.
+       Parâmetros: img (nome em assets/img/faixas, sem extensão), titulo, texto, tag (h1/h2), class, mobile (bool: existe -mobile.png) */ -}}
+{{- $img := .img }}
+{{- $mob := printf "faixas/%s-mobile.png" $img }}
+{{- $temMobile := resources.Get (printf "img/%s" $mob) }}
+<section class="faixa faixa-{{ $img }}{{ with .class }} {{ . }}{{ end }}{{ if $temMobile }} tem-mobile{{ end }}">
+  {{ partial "img.html" (dict "src" (printf "faixas/%s.png" $img) "alt" "" "class" "faixa-img faixa-desktop" "loading" .loading) }}
+  {{- if $temMobile }}{{ partial "img.html" (dict "src" $mob "alt" "" "class" "faixa-img faixa-mobile" "larguras" (slice 480 800 1080) "loading" .loading) }}{{ end }}
+  {{- if or .titulo .texto }}
+  <div class="faixa-texto cont">
+    {{- $tag := .tag | default "h2" }}
+    {{- with .titulo }}{{ printf "<%s>" $tag | safeHTML }}{{ . }}{{ printf "</%s>" $tag | safeHTML }}{{ end }}
+    {{- with .texto }}<p>{{ . }}</p>{{ end }}
+  </div>
+  {{- end }}
+</section>
