@@ -1,3 +1,6 @@
+# www → apex (o canonical é ligna.pro)
+https://www.ligna.pro/*  https://ligna.pro/:splat  301
+
 # Endereços do site antigo (WordPress/Polylang) → site novo. 301 = permanente.
 /inicio/                 /        301
 /inicio                  /        301

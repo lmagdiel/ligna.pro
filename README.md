@@ -53,7 +53,12 @@ Publicação manual (com `.env` contendo `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_AC
 
 Campos: nome, e-mail, anexo (opcional, até 25 MB; PDF, Office, texto, imagem, áudio, vídeo, zip) e mensagem. Proteções: campo-armadilha, Turnstile e validação no servidor. O formulário envia os caminhos das páginas de "enviado"/"erro" do idioma atual (`ok`/`erro`, só caminhos relativos do próprio site são aceitos). Para desligar o anexo: `anexo = false` em `hugo.toml`.
 
-## Plano de virada
+## Virada (feita em 30/09/2026)
+
+- DNS: `ligna.pro` e `www` → CNAME proxied para `ligna-pro.pages.dev`; `mail.ligna.pro` e `ftp.ligna.pro` viraram registros A diretos no IP do cPanel (antes eram CNAME para o apex, o que derrubaria o e-mail); MX e SRVs (CalDAV/CardDAV) passaram a apontar para `mail.ligna.pro`. Backup dos registros anteriores em `_fonte/dns-antes-da-virada.json` (fora do git).
+- O wildcard `*.ligna.pro` continua no cPanel (`webmail`, `cpanel` etc.).
+
+## Plano de virada (histórico)
 
 1. Preview com senha (`PREVIEW_AUTH`) para a Ligna aprovar.
 2. Turnstile e `SMTP_PASS` configurados; testar o formulário nos 3 idiomas, com e sem anexo.
