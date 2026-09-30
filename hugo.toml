@@ -57,7 +57,7 @@ defaultContentLanguageInSubdir = false
   designer = { nome = "Polvo", url = "https://polvo.design/" }
   # Formulário de contato (Cloudflare Pages Function em /api/contato).
   contactEndpoint = "/api/contato"
-  turnstileSiteKey = ""   # site key do Turnstile (pública); o segredo fica no Cloudflare
+  turnstileSiteKey = "0x4AAAAAAFKb5um42_Wih44O"   # site key do Turnstile (pública); o segredo fica no Cloudflare
   anexo = true            # campo de anexo no formulário (tamanho máx. em functions/api/contato.js)
 
 [markup.goldmark.renderer]
